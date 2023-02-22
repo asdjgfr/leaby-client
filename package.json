@@ -14,7 +14,7 @@
     "cz": "git-cz",
     "prepare:nuxt": "nuxi prepare",
     "type:check": "nuxi prepare",
-    "dev": "nuxi dev",
+    "dev": "nuxi dev --port=3001",
     "dev:tauri": "tauri dev",
     "build": "nuxi build",
     "build:tauri": "tauri build",
