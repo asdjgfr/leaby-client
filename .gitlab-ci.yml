@@ -1,0 +1,26 @@
+default:
+  image:
+    name: node:lts-slim
+  before_script:
+    - npm add -g pnpm --registry=https://registry.npmmirror.com
+    - pnpm config set store-dir .pnpm-store
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - .nuxt/
+      - node_modules/
+      - .pnpm-store
+      - .scannerwork/
+      - .sonar/
+
+stages:
+  - install
+  - prepare
+  - ts-check
+  - sonarqube
+
+include:
+  - local: '.gitlab/.install.yml'
+  - local: '.gitlab/.prepare.yml'
+  - local: '.gitlab/.ts-check.yml'
+  - local: '.gitlab/.sonarqube-check.yml'

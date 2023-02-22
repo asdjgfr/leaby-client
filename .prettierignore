@@ -1,0 +1,50 @@
+# TODO gitignore 内容自动生成到此文件中
+# .gitignore start
+.DS_Store
+node_modules
+/dist
+
+/tests/e2e/videos/
+/tests/e2e/screenshots/
+
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 本地ssl证书
+/scripts/cert/localhost.pem
+/scripts/cert/localhost-key.pem
+
+# 四维云配置文件 由 scripts/build/ncloud.ts 自动生成
+/ncloud/Dockerfile
+/ncloud/nginx.conf
+
+# 打包统计
+stats.html
+# memlab 请求的登录缓存
+memlab.userinfo.json
+# memlab 生成的结果
+memlab-report/
+
+# .gitignore end
+
+components.d.ts
+auto-imports.d.ts
+.eslintrc-auto-import.json
+.nuxt
