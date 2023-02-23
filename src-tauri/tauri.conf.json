@@ -7,7 +7,7 @@
     "distDir": "../tauri-bootstrap"
   },
   "package": {
-    "productName": "四维云 BI",
+    "productName": "乐摆",
     "version": "0.1.0"
   },
   "tauri": {
@@ -66,7 +66,7 @@
         "fullscreen": true,
         "height": 600,
         "resizable": true,
-        "title": "四维云 BI",
+        "title": "乐摆",
         "width": 800
       }
     ]

@@ -7,7 +7,7 @@ dotenv.config({
 export default defineNuxtConfig({
   app: {
     head: {
-      title: "四维云 BI",
+      title: "乐摆",
       htmlAttrs: {
         lang: "zh-CN",
       },
@@ -16,7 +16,7 @@ export default defineNuxtConfig({
         {
           key: "description",
           name: "description",
-          content: "四维云 BI",
+          content: "乐摆",
         },
       ],
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
@@ -49,6 +49,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       PROJECT_ENV,
+    },
+  },
+  vite: {
+    server: {
+      proxy: {
+        "/api": "http://localhost:3000",
+      },
     },
   },
 });

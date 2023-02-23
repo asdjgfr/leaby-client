@@ -27,21 +27,6 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-# 本地ssl证书
-/scripts/cert/localhost.pem
-/scripts/cert/localhost-key.pem
-
-# 四维云配置文件 由 scripts/build/ncloud.ts 自动生成
-/ncloud/Dockerfile
-/ncloud/nginx.conf
-
-# 打包统计
-stats.html
-# memlab 请求的登录缓存
-memlab.userinfo.json
-# memlab 生成的结果
-memlab-report/
-
 # .gitignore end
 
 components.d.ts

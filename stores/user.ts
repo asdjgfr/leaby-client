@@ -1,33 +1,60 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
+import { merge } from "lodash-es";
+import jwtDecode from "jwt-decode";
+import type { UserInfo } from "~/types/user";
 
 export const useUserStore = defineStore("user", () => {
-  /**
-   * Current named of the user.
-   */
-  const savedName = ref("");
-  const previousNames = ref(new Set<string>());
-
-  const usedNames = computed(() => Array.from(previousNames.value));
-  const otherNames = computed(() =>
-    usedNames.value.filter((name) => name !== savedName.value)
-  );
-
-  /**
-   * Changes the current name of the user and saves the one that was used
-   * before.
-   *
-   * @param {string} name - new name to set
-   */
-  function setNewName(name: string) {
-    if (savedName.value) previousNames.value.add(savedName.value);
-
-    savedName.value = name;
+  const jwt = ref(localStorage.getItem("jwt") ?? "");
+  const prevInfo: UserInfo = {
+    countryCallingCode: 0,
+    email: "",
+    exp: 0,
+    iat: 0,
+    id: 0,
+    phone: "",
+    roles: "",
+    slat: "",
+    username: "",
+  };
+  const initInfo = Object.freeze({ ...prevInfo });
+  try {
+    merge(prevInfo, jwtDecode(jwt.value));
+  } catch (e) {
+    jwt.value = "";
   }
 
+  const info = reactive<UserInfo>({
+    ...prevInfo,
+  });
+  const isLogin = computed(() => jwt.value !== "");
+
+  /**
+   * 更新用户信息
+   *
+   * @param {string} _jwt - jwt
+   * @returns {UserInfo} - 用户信息
+   */
+  function updateUser(_jwt: string) {
+    jwt.value = _jwt;
+    const params: UserInfo = jwtDecode(_jwt);
+    merge(info, params);
+    localStorage.setItem("jwt", _jwt);
+    return params;
+  }
+  /**
+   * 登出
+   */
+  function signOut() {
+    jwt.value = "";
+    merge(info, initInfo);
+    localStorage.removeItem("jwt");
+  }
   return {
-    setNewName,
-    otherNames,
-    savedName,
+    updateUser,
+    info,
+    jwt,
+    isLogin,
+    signOut,
   };
 });
 
