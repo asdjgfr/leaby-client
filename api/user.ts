@@ -6,12 +6,14 @@ import type { AxiosResponse } from "axios";
  *
  * @param {string} username - 用户名
  * @param {string} password - 密码
+ * @param {string} reCAPTCHA - reCAPTCHA 的 token
  * @returns {AxiosResponse<{ access_token: string; }>} - jwt
  */
 export function login(
   username: string,
-  password: string
+  password: string,
+  reCAPTCHA: string
 ): AxiosResponse<{ access_token: string }> {
   const { $post } = useNuxtApp();
-  return $post(LOGIN_URL, { username, password });
+  return $post(LOGIN_URL, { username, password, reCAPTCHA });
 }

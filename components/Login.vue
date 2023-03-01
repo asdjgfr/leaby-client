@@ -79,6 +79,7 @@ import { login } from "~/api/user";
 import { useUserStore } from "~/stores/user";
 import type { FormInstance, FormRules } from "element-plus";
 
+const config = useRuntimeConfig();
 const router = useRouter();
 const userStore = useUserStore();
 const formRef = ref<FormInstance>();
@@ -145,7 +146,11 @@ async function handleSubmit() {
   try {
     loading.value = true;
     await formRef.value.validate();
-    const res = await login(info.username, info.password);
+    const token = await grecaptcha.execute(config.public.RE_CAPTCHA_SITE_KEY, {
+      action: "submit",
+    });
+
+    const res = await login(info.username, info.password, token);
     userStore.updateUser(res.data.access_token);
     router.replace("/");
   } catch (e) {}

@@ -80,7 +80,7 @@ export default defineNuxtPlugin(() => {
         );
       }
 
-      let text = err.message;
+      let text = err.response.data.message;
       if (err.response?.status >= 500) {
         switch (err.response?.status) {
           case 500:
@@ -97,7 +97,7 @@ export default defineNuxtPlugin(() => {
             text = "服务器超载";
             break;
           default:
-            text = "服务器错误" + (err.message ?? "");
+            text = "服务器错误" + (err.response.data.message ?? "");
         }
         ElNotification({
           title: "错误",
@@ -106,14 +106,17 @@ export default defineNuxtPlugin(() => {
         });
         return Promise.reject(new Error(text));
       }
-      if (err.code === "ECONNABORTED" && isTimeout.test(err.message)) {
+      if (
+        err.code === "ECONNABORTED" &&
+        isTimeout.test(err.response.data.message)
+      ) {
         text = "请求超时";
       } else if (err.code === "ERR_NETWORK") {
         text = "网络错误";
       }
       // 如果是取消请求，则不显示提示
       if (err.code === "ERR_CANCELED") {
-        return Promise.reject(err.message);
+        return Promise.reject(err.response.data.message);
       }
       if (err.response?.status === 401) {
         text = "授权失败";

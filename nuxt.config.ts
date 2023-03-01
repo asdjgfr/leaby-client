@@ -1,9 +1,14 @@
 // https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 import * as dotenv from "dotenv";
 const PROJECT_ENV = process.env.PROJECT_ENV ?? process.env.NODE_ENV;
+
 dotenv.config({
   path: `.env.${PROJECT_ENV}`,
 });
+dotenv.config({
+  path: `.env.local`,
+});
+
 export default defineNuxtConfig({
   app: {
     head: {
@@ -20,6 +25,11 @@ export default defineNuxtConfig({
         },
       ],
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+      script: [
+        {
+          src: `https://www.recaptcha.net/recaptcha/api.js?render=${process.env.RE_CAPTCHA_SITE_KEY}`,
+        },
+      ],
     },
   },
   build: {
@@ -49,6 +59,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       PROJECT_ENV,
+      RE_CAPTCHA_SITE_KEY: process.env.RE_CAPTCHA_SITE_KEY,
     },
   },
   vite: {
