@@ -26,6 +26,9 @@
           </template>
         </el-input>
       </el-form-item>
+      <el-form-item prop="email">
+        <el-input v-model="info.email" placeholder="请输入邮箱" />
+      </el-form-item>
       <el-form-item prop="password">
         <el-input
           v-model="info.password"
@@ -50,6 +53,15 @@
           </template>
         </el-input>
       </el-form-item>
+      <el-form-item prop="confirmPassword">
+        <el-input
+          v-model="info.confirmPassword"
+          placeholder="请再次输入密码"
+          type="password"
+          show-password
+        >
+        </el-input>
+      </el-form-item>
       <el-form-item>
         <el-button
           class="tw-w-full"
@@ -60,46 +72,37 @@
         >
       </el-form-item>
     </el-form>
-    <div class="tw-text-center">
-      <p>
-        This site is protected by reCAPTCHA and the Google
-        <a href="https://policies.google.com/privacy">Privacy Policy</a> and
-        <a href="https://policies.google.com/terms">Terms of Service</a> apply.
-      </p>
-      <p>
-        <el-link type="primary">重置密码</el-link>
-      </p>
-      <p>
-        <span>没有账号？</span>
-        <el-link type="primary">创建账号</el-link>
-      </p>
-    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { passwordPattern, usernamePattern } from "~/utils/validate";
+import {
+  emailPattern,
+  passwordPattern,
+  usernamePattern,
+} from "~/utils/validate";
 import { passwordPlaceholder, usernamePlaceholder } from "~/utils/placeholder";
-import { login } from "~/api/user";
-import { useUserStore } from "~/stores/user";
+import { register } from "~/api/user";
 import type { FormInstance, FormRules } from "element-plus";
 
-const config = useRuntimeConfig();
 const router = useRouter();
-const userStore = useUserStore();
 const formRef = ref<FormInstance>();
 const loading = ref(false);
 const info = reactive<{
   username: string;
+  email: string;
   password: string;
+  confirmPassword: string;
 }>({
   username: "",
+  email: "",
   password: "",
+  confirmPassword: "",
 });
 
 const rules = reactive<FormRules>({
   username: [
-    { required: true, message: "请输入用户名", trigger: "blur" },
+    { required: true, message: "用户名不能为空", trigger: "blur" },
     {
       validator: (_, value, callback) => {
         if (!usernamePattern.test(value)) {
@@ -113,8 +116,21 @@ const rules = reactive<FormRules>({
       trigger: "blur",
     },
   ],
+  email: [
+    { required: true, message: "邮箱不能为空", trigger: "blur" },
+    {
+      validator: (_, value, callback) => {
+        if (!emailPattern.test(value)) {
+          callback(new Error("邮箱格式不正确"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
   password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
+    { required: true, message: "密码不能为空", trigger: "blur" },
     {
       validator: (_, value, callback) => {
         if (!passwordPattern.test(value)) {
@@ -123,6 +139,19 @@ const rules = reactive<FormRules>({
         } else {
           callback();
           toggleTooltip("password", false);
+        }
+      },
+      trigger: "blur",
+    },
+  ],
+  confirmPassword: [
+    { required: true, message: "密码不能为空", trigger: "blur" },
+    {
+      validator: (_, value, callback) => {
+        if (value !== info.password) {
+          callback(new Error("两次密码不一致"));
+        } else {
+          callback();
         }
       },
       trigger: "blur",
@@ -137,12 +166,6 @@ const tooltipVisible = reactive(
   }, {} as Record<string, boolean>)
 );
 
-onMounted(() => {
-  if (userStore.isLogin) {
-    router.replace("/");
-  }
-});
-
 /**
  * 提交
  */
@@ -151,13 +174,10 @@ async function handleSubmit() {
   try {
     loading.value = true;
     await formRef.value.validate();
-    const token = await grecaptcha.execute(config.public.RE_CAPTCHA_SITE_KEY, {
-      action: "submit",
-    });
 
-    const res = await login(info.username, info.password, token);
-    userStore.updateUser(res.data.access_token);
-    router.replace("/");
+    const res = await register(info.username, info.password, info.email);
+
+    router.replace("/login");
   } catch (e) {}
   loading.value = false;
 }
